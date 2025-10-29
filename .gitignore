@@ -1,0 +1,9 @@
+.terraform/
+.terragrunt-cache/
+.idea/
+projects/**/backend.tf
+projects/**/terraform.tf
+*.tfstate
+*.tfstate.*
+*.tfvars.json
+*.terraform.lock.hcl
