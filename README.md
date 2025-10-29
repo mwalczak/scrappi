@@ -37,16 +37,9 @@ docker-compose exec php composer update
 
 ### 3. Access the Application
 
-- **API Platform Documentation**: http://localhost:8000/api
+- **API Platform Interactive Docs (Swagger UI)**: http://localhost:8000/api
+- **OpenAPI Specification (JSON)**: http://localhost:8000/api/docs.json
 - **Health Check Endpoint**: http://localhost:8000/api/health
-
-The health check endpoint returns:
-```json
-{
-  "status": "healthy",
-  "timestamp": "2025-10-29T12:00:00+00:00"
-}
-```
 
 ## Helper Scripts
 
@@ -89,21 +82,6 @@ Or the traditional way:
 docker-compose exec php ./vendor/bin/phpunit
 ```
 
-
-Expected output:
-```
-PHPUnit 11.5.42 by Sebastian Bergmann and contributors.
-
-Runtime:       PHP 8.4.14
-Configuration: /var/www/html/phpunit.xml
-
-..                                                                  2 / 2 (100%)
-
-Time: 00:00.869, Memory: 40.50 MB
-
-OK (2 tests, 7 assertions)
-```
-
 ## Stopping the Application
 
 ```bash
@@ -121,38 +99,16 @@ docker-compose down -v
 ├── bin/                       # Console scripts
 │   ├── console               # Symfony console
 │   └── phpunit              # PHPUnit runner
+├── php                        # Helper script: run commands in PHP container
+├── composer                   # Helper script: run Composer commands
+├── console                    # Helper script: run Symfony console
+├── test                       # Helper script: run PHPUnit tests
 ├── config/                    # Configuration files
 │   ├── packages/             # Package configurations
 │   │   ├── api_platform.yaml
 │   │   ├── doctrine.yaml
 │   │   ├── framework.yaml
-### Helper Scripts (Recommended)
-
-The project includes convenient helper scripts in the root directory:
-
-```bash
-# Run commands in PHP container
-./php bash                              # Interactive shell
-./php [any-command]                     # Run any command
-
-# Composer commands
-./composer install                      # Install dependencies
-./composer update                       # Update dependencies
-./composer require symfony/mailer       # Add new package
-
-# Symfony console commands
-./console cache:clear                   # Clear cache
-./console debug:router                  # List all routes
-./console debug:container               # List all services
-./console doctrine:database:create      # Create database
-./console doctrine:migrations:migrate   # Run migrations
-
-# Run tests
-./test                                  # Run all tests
-./test --filter HealthCheck             # Run specific test
-```
-
-### Docker Commands (Direct)
+│   │   └── test/
 │   │       └── framework.yaml
 │   ├── routes/               # Route configurations
 │   │   └── api_platform.yaml
@@ -162,51 +118,23 @@ The project includes convenient helper scripts in the root directory:
 │   └── bootstrap.php        # Bootstrap configuration
 ├── public/                    # Public directory
 │   └── index.php            # Application entry point
-
-# Check container status
-docker-compose ps
 ├── src/                       # Application code
-│   ├── Controller/           # Controllers
-### Traditional Commands (Without Helper Scripts)
-│   └── Kernel.php           # Application kernel
-# Composer
-│   ├── Controller/
-├── docker-compose.yml         # Docker Compose configuration
-├── Dockerfile                # PHP container definition
-# Console
-
-# View logs
-docker-compose logs -f php
-# Tests
-docker-compose exec php ./vendor/bin/phpunit
-docker-compose exec php composer update
-
-# Require new package
-docker-compose exec php composer require package/name
-```
-
-### Symfony Console Commands
-```bash
-# Clear cache
-docker-compose exec php php bin/console cache:clear
-
-# List all routes
-docker-compose exec php php bin/console debug:router
-
-# List all services
-docker-compose exec php php bin/console debug:container
-```
-
-### Database Commands
-```bash
-# Create database
-docker-compose exec php php bin/console doctrine:database:create
-
-# Run migrations
-docker-compose exec php php bin/console doctrine:migrations:migrate
-
-# Create new migration
-docker-compose exec php php bin/console doctrine:migrations:generate
+│   ├── ApiResource/         # API Platform resources
+│   ├── Controller/          # Controllers
+│   ├── Entity/              # Doctrine entities
+│   ├── Repository/          # Doctrine repositories
+│   ├── State/               # API Platform state providers/processors
+│   └── Kernel.php          # Application kernel
+├── tests/                     # Test files
+│   └── Controller/          # Controller tests
+├── var/                       # Generated files (cache, logs)
+├── vendor/                    # Composer dependencies
+├── docker-compose.yml        # Docker Compose configuration
+├── Dockerfile               # PHP container definition
+├── composer.json            # PHP dependencies
+├── phpunit.xml              # PHPUnit configuration
+├── .env                     # Environment variables
+└── .env.test                # Test environment variables
 ```
 
 ## Technology Stack
@@ -261,11 +189,12 @@ All tests use Symfony's WebTestCase for full functional testing.
 Key environment variables in `.env`:
 
 ```env
-APP_ENV=dev
-APP_SECRET=changeme_this_is_a_secret_key_for_symfony
-DATABASE_URL="postgresql://app:app@db:5432/app?serverVersion=15&charset=utf8"
-```
-
+- **PHP**: 8.4.14 (Latest Stable)
+- **Symfony**: 7.3.5 (Latest Stable)
+- **API Platform**: 3.4.17
+- **Doctrine ORM**: 3.5.3
+- **Doctrine DBAL**: 4.3.4
+- **PHPUnit**: 11.5.42
 For testing, see `.env.test` which overrides settings for the test environment.
 
 ## Troubleshooting
@@ -280,22 +209,43 @@ docker-compose up -d --build
 ```bash
 docker-compose exec php chown -R www-data:www-data /var/www/html
 ```
+1. Create entity in `src/Entity/` or API Resource in `src/ApiResource/` with API Platform attributes
+2. Create a state provider in `src/State/` if needed for custom data handling
+3. The resource will automatically be available at `/api/{resource}`
+4. API documentation is auto-generated and visible at `/api`
 
-### Clear all caches
+**Note:** The interactive Swagger UI at `/api` requires `symfony/twig-bundle`. Install it with:
 ```bash
+./composer require symfony/twig-bundle
+```
 docker-compose exec php php bin/console cache:clear
 docker-compose exec php php bin/console cache:clear --env=test
 ```
-
+The `/api/health` endpoint is implemented using API Platform's state provider pattern and returns:
 ## Next Steps
 
 - Add your first API resource using `src/Entity/` or `src/ApiResource/`
+**Response Format** (JSON-LD):
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-10-29T12:00:00+00:00"
+}
+```
+
 - Configure CORS settings in `config/packages/nelmio_cors.yaml`
 - Add authentication/authorization
 - Set up CI/CD pipelines
-- Add more comprehensive tests
+- `testHealthCheckReturnsJsonContent()`: Verifies correct Content-Type header (application/ld+json)
+- `testHealthCheckAppearsInApiDocumentation()`: Verifies endpoint is documented in OpenAPI spec
 
 ## License
+**Features:**
+- ✅ Fully documented in API Platform Swagger UI at `/api`
+- ✅ Auto-generated OpenAPI documentation
+- ✅ Follows API Platform conventions
+- ✅ Returns JSON-LD format (semantic web standard)
+
 
 Proprietary
 
