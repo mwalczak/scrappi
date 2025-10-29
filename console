@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Helper script to run Symfony console commands
+# Usage: ./console [command]
+# Examples:
+#   ./console cache:clear
+#   ./console debug:router
+#   ./console doctrine:database:create
+
+cd "$(dirname "$0")"
+
+docker-compose exec php php bin/console "$@"
+

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Helper script to run Composer commands
+# Usage: ./composer [command]
+# Examples:
+#   ./composer install
+#   ./composer require symfony/mailer
+#   ./composer update
+
+cd "$(dirname "$0")"
+
+docker-compose exec php composer "$@"

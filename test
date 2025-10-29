@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Helper script to run PHPUnit tests
+# Usage: ./test [options]
+# Examples:
+#   ./test
+#   ./test --filter HealthCheck
+#   ./test tests/Controller/HealthCheckControllerTest.php
+
+cd "$(dirname "$0")"
+
+docker-compose exec php ./vendor/bin/phpunit "$@"
+
