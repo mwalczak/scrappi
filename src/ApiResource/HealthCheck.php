@@ -2,17 +2,19 @@
 namespace App\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Response;
 #[ApiResource(
     operations: [
         new Get(
             uriTemplate: '/health',
-            openapiContext: [
-                'summary' => 'Health check endpoint',
-                'description' => 'Returns the health status of the API',
-                'responses' => [
-                    '200' => [
-                        'description' => 'API is healthy',
-                        'content' => [
+            openapi: new Operation(
+                summary: 'Health check endpoint',
+                description: 'Returns the health status of the API',
+                responses: [
+                    '200' => new Response(
+                        description: 'API is healthy',
+                        content: new \ArrayObject([
                             'application/json' => [
                                 'schema' => [
                                     'type' => 'object',
@@ -29,10 +31,10 @@ use ApiPlatform\Metadata\ApiResource;
                                     ]
                                 ]
                             ]
-                        ]
-                    ]
+                        ])
+                    )
                 ]
-            ],
+            ),
             provider: 'App\State\HealthCheckProvider'
         )
     ],
