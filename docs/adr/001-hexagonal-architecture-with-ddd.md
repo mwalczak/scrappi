@@ -201,19 +201,6 @@ class MediaEntity
 - Symfony DI container wires everything together
 - Service configuration in `config/services.yaml`
 
-**Example configuration**:
-```yaml
-services:
-    # Domain repository interface -> Infrastructure implementation
-    App\Domain\Media\Repository\MediaRepositoryInterface:
-        class: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineMediaRepository
-
-    # Auto-wire application handlers
-    App\Application\:
-        resource: '../src/Application'
-        autowire: true
-```
-
 ## Directory Structure
 
 ```
@@ -303,3 +290,66 @@ src/
 - Consider repository pattern with specification pattern for complex queries
 - Use domain events for cross-aggregate communication
 - Keep API Platform resources thin—delegate to query handlers
+
+### Type Safety & Code Quality
+
+**PHPStan Level 9** (maximum strictness) is enforced across the codebase:
+
+```php
+// Use assertions for runtime type checking
+public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
+{
+    assert(isset($uriVariables['id']), 'Missing id parameter');
+    $idValue = $uriVariables['id'];
+    assert(is_string($idValue) || is_numeric($idValue), 'Invalid id type');
+
+    $id = (string) $idValue;
+    // PHPStan now knows $id is string...
+}
+```
+
+**Benefits**:
+- Catches type errors at development time
+- Eliminates runtime type bugs
+- Improves IDE autocomplete and refactoring
+- Documents expected types explicitly
+
+### Mapper Pattern for State Providers
+
+Eliminate code duplication by creating static mapper classes:
+
+```php
+// src/Infrastructure/ApiPlatform/Mapper/MediaMapper.php
+final class MediaMapper
+{
+    public static function toResource(MediaDTO $dto): Media
+    {
+        $resource = new Media();
+        $resource->id = $dto->id;
+        $resource->title = $dto->title;
+        $resource->sourceType = $dto->sourceType;
+        return $resource;
+    }
+}
+
+// Usage in State Providers
+class MediaCollectionProvider implements ProviderInterface
+{
+    public function provide(...): array
+    {
+        $dtos = $this->queryHandler->__invoke(new GetMediaListQuery());
+
+        // Use first-class callable syntax
+        return array_map(
+            MediaMapper::toResource(...),
+            $dtos
+        );
+    }
+}
+```
+
+**Benefits**:
+- Single source of truth for DTO → Resource mapping
+- Easier to maintain and test
+- Reusable across multiple State Providers
+- Cleaner code with first-class callable syntax

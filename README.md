@@ -1,6 +1,6 @@
 # Symfony API Platform Application
 
-A simple PHP API application using Symfony 7.3 and API Platform 3.4 with a health-check endpoint.
+A simple PHP API application using Symfony 7.3 and API Platform 4.0 with Netflix video scraping capabilities.
 
 ## Requirements
 
@@ -11,130 +11,78 @@ No local PHP installation is required!
 
 ## Getting Started
 
-### 1. Start the Application
+### Quick Setup (Recommended)
+
+For first-time setup or clean installation, run:
 
 ```bash
-docker-compose up -d --build
+make setup
 ```
 
 This will:
-- Build the PHP container with PHP 8.4 and all dependencies
-- Start PostgreSQL 15 database
-- Install Composer dependencies automatically
-- Start the Symfony development server on port 8000
+- Clean up existing containers and volumes
+- Build and start Docker containers
+- Wait for PostgreSQL to be ready
+- Install Composer dependencies
+- Create databases (dev and test)
+- Run all migrations
+- Clear caches
+- Run tests to verify everything works
+- Run PHPStan and Deptrac validation
 
-### 2. Install/Update Dependencies (if needed)
+**Setup time**: ~2-3 minutes
 
-After the containers are running, you can manage dependencies:
+To see all available commands:
+```bash
+make help
+```
+
+### Common Tasks
 
 ```bash
-# Install dependencies
-docker-compose exec php composer install
+# Development
+make up              # Start containers
+make down            # Stop containers
+make restart         # Restart containers
+make logs            # View container logs
+make shell           # Open PHP container shell
 
-# Update dependencies
-docker-compose exec php composer update
+# Database
+make db-create       # Create database
+make db-migrate      # Run migrations
+make db-reset        # Drop and recreate database
+
+# Testing & Quality
+make test            # Run PHPUnit tests
+make phpstan         # Run static analysis
+make deptrac         # Validate architecture
+make qa              # Run all quality checks
+
+# Cache
+make cache-clear     # Clear Symfony cache
+
+# Status
+make status          # Show container status
 ```
 
-### 3. Access the Application
+### Access the Application
 
-- **API Platform Interactive Docs (Swagger UI)**: http://localhost:8000/api
-- **OpenAPI Specification (JSON)**: http://localhost:8000/api/docs.json
-- **Health Check Endpoint**: http://localhost:8000/api/health
+- **API Platform Interactive Docs (Swagger UI)**: http://localhost:8001/api
+- **OpenAPI Specification (JSON)**: http://localhost:8001/api/docs.json
+- **Health Check Endpoint**: http://localhost:8001/api/health
+- **Netflix Videos API**: http://localhost:8001/api/netflix_videos
 
-## Helper Scripts
+## Helper Scripts (Alternative)
 
-To avoid typing `docker-compose exec php` repeatedly, the project includes convenient helper scripts:
-
-### Available Scripts
+If you prefer not to use Make, helper scripts are still available:
 
 ```bash
-# Run any command in PHP container
-./php [command]
-./php bash                    # Open interactive shell
-
-# Run Composer commands
-./composer install
-./composer require symfony/mailer
-./composer update
-
-# Run Symfony console commands
-./console cache:clear
-./console debug:router
-./console doctrine:database:create
-
-# Run PHPUnit tests
-./test
-./test --filter HealthCheck
-./test tests/Controller/HealthCheckControllerTest.php
-```
-
-## Running Tests
-
-Run PHPUnit tests using the helper script:
-
-```bash
-./test
-```
-
-Or the traditional way:
-
-```bash
-docker-compose exec php ./vendor/bin/phpunit
-```
-
-## Stopping the Application
-
-```bash
-# Stop containers
-docker-compose down
-
-# Stop and remove volumes
-docker-compose down -v
-```
-
-## Project Structure
-
-```
-.
-├── bin/                       # Console scripts
-│   ├── console               # Symfony console
-│   └── phpunit              # PHPUnit runner
-├── php                        # Helper script: run commands in PHP container
-├── composer                   # Helper script: run Composer commands
-├── console                    # Helper script: run Symfony console
-├── test                       # Helper script: run PHPUnit tests
-├── config/                    # Configuration files
-│   ├── packages/             # Package configurations
-│   │   ├── api_platform.yaml
-│   │   ├── doctrine.yaml
-│   │   ├── framework.yaml
-│   │   └── test/
-│   │       └── framework.yaml
-│   ├── routes/               # Route configurations
-│   │   └── api_platform.yaml
-│   ├── bundles.php          # Registered bundles
-│   ├── routes.yaml          # Application routes
-│   ├── services.yaml        # Service definitions
-│   └── bootstrap.php        # Bootstrap configuration
-├── public/                    # Public directory
-│   └── index.php            # Application entry point
-├── src/                       # Application code
-│   ├── ApiResource/         # API Platform resources
-│   ├── Controller/          # Controllers
-│   ├── Entity/              # Doctrine entities
-│   ├── Repository/          # Doctrine repositories
-│   ├── State/               # API Platform state providers/processors
-│   └── Kernel.php          # Application kernel
-├── tests/                     # Test files
-│   └── Controller/          # Controller tests
-├── var/                       # Generated files (cache, logs)
-├── vendor/                    # Composer dependencies
-├── docker-compose.yml        # Docker Compose configuration
-├── Dockerfile               # PHP container definition
-├── composer.json            # PHP dependencies
-├── phpunit.xml              # PHPUnit configuration
-├── .env                     # Environment variables
-└── .env.test                # Test environment variables
+./php [command]          # Run any command in PHP container
+./composer [command]     # Run Composer commands
+./console [command]      # Run Symfony console commands
+./test                   # Run PHPUnit tests
+./phpstan analyse        # Run static analysis
+./deptrac analyze        # Validate architecture
 ```
 
 ## Technology Stack
@@ -145,12 +93,36 @@ docker-compose down -v
 - **Doctrine ORM**: 3.3+
 - **Doctrine Bundle**: 3.0+
 - **PHPUnit**: 12.0+
+- **PHPStan**: 2.1+ (Level 9 - maximum strictness)
+- **Deptrac**: Architecture validation
 - **PostgreSQL**: 15
 - **Docker**: For containerization
 
 ## Development
 
 All code in the current directory is mounted into the container, so changes are reflected immediately without rebuilding.
+
+### Git Hooks (Automatic Quality Checks)
+
+Git hooks are **automatically installed** when you run:
+- `make setup` or `make install`
+- `composer install` or `composer update`
+
+**Pre-commit hook** runs before each commit:
+- ✅ PHPStan (Level 9) - Static analysis
+- ✅ Deptrac - Architecture validation
+
+This ensures all commits maintain code quality and architectural boundaries.
+
+**Manual installation**:
+```bash
+make hooks
+```
+
+**Bypass hook** (not recommended):
+```bash
+git commit --no-verify
+```
 
 ### Adding New Endpoints
 
@@ -203,52 +175,29 @@ For testing, see `.env.test` which overrides settings for the test environment.
 
 ### Container won't start
 ```bash
-docker-compose down -v
-docker-compose up -d --build
+make clean
+make up
 ```
 
 ### Permission issues
 ```bash
 docker-compose exec php chown -R www-data:www-data /var/www/html
 ```
-1. Create entity in `src/Entity/` or API Resource in `src/ApiResource/` with API Platform attributes
-2. Create a state provider in `src/State/` if needed for custom data handling
-3. The resource will automatically be available at `/api/{resource}`
-4. API documentation is auto-generated and visible at `/api`
 
-**Note:** The interactive Swagger UI at `/api` requires `symfony/twig-bundle`. Install it with:
+### Database issues
 ```bash
-./composer require symfony/twig-bundle
-```
-docker-compose exec php php bin/console cache:clear
-docker-compose exec php php bin/console cache:clear --env=test
-```
-The `/api/health` endpoint is implemented using API Platform's state provider pattern and returns:
-## Next Steps
-
-- Add your first API resource using `src/Entity/` or `src/ApiResource/`
-**Response Format** (JSON-LD):
-```json
-{
-  "status": "healthy",
-  "timestamp": "2025-10-29T12:00:00+00:00"
-}
+make db-reset
 ```
 
-- Configure CORS settings in `config/packages/nelmio_cors.yaml`
-- Add authentication/authorization
-- Set up CI/CD pipelines
-- `testHealthCheckReturnsJsonContent()`: Verifies correct Content-Type header (application/ld+json)
-- `testHealthCheckAppearsInApiDocumentation()`: Verifies endpoint is documented in OpenAPI spec
+### Reset entire environment
+```bash
+make setup
+```
+This will clean up and rebuild everything from scratch.
 
-## License
-**Features:**
-- ✅ Fully documented in API Platform Swagger UI at `/api`
-- ✅ Auto-generated OpenAPI documentation
-- ✅ Follows API Platform conventions
-- ✅ Returns JSON-LD format (semantic web standard)
-
-
-Proprietary
+### View logs
+```bash
+make logs
+```
 
 

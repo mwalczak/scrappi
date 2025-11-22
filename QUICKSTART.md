@@ -1,108 +1,90 @@
 # Quick Reference Guide
 
-## Start/Stop Application
+## First-Time Setup
 
 ```bash
-# Start
-docker-compose up -d --build
-
-# Stop
-docker-compose down
-
-# Stop and remove volumes
-docker-compose down -v
-
-# View logs
-docker-compose logs -f php
-
-# Check status
-docker-compose ps
+make setup
 ```
 
-## Helper Scripts
+This will set up everything you need in ~2-3 minutes:
+- Containers, databases, migrations, tests, and validation
 
+## Common Commands
+
+### Development
 ```bash
-# Run any command in PHP container
-./php [command]
-
-# Interactive shell
-./php bash
-
-# Composer
-./composer install
-./composer update
-./composer require package/name
-
-# Symfony Console
-./console cache:clear
-./console debug:router
-./console doctrine:database:create
-./console doctrine:migrations:migrate
-
-# Tests
-./test
-./test --filter TestName
+make up              # Start containers
+make down            # Stop containers
+make restart         # Restart containers
+make clean           # Stop and remove volumes
+make logs            # View container logs
+make shell           # Open PHP container shell
+make status          # Show container status
 ```
 
-## Common Tasks
-
-### Run Tests
+### Database
 ```bash
-./test
+make db-create       # Create database
+make db-migrate      # Run migrations
+make db-reset        # Drop and recreate database
 ```
 
-### Clear Cache
+### Testing & Quality
 ```bash
-./console cache:clear
+make test            # Run PHPUnit tests
+make phpstan         # Run static analysis
+make deptrac         # Validate architecture
+make qa              # Run all quality checks
 ```
 
-### View Routes
+### Cache
 ```bash
-./console debug:router
+make cache-clear     # Clear Symfony cache
 ```
 
-### Install New Package
+### Helpers
 ```bash
-./composer require symfony/mailer
+make help                           # Show all available commands
+make composer CMD="require pkg"     # Run Composer command
+make console CMD="debug:router"     # Run Symfony console command
 ```
 
-### Create Database
-```bash
-./console doctrine:database:create
-```
+## Helper Scripts (Alternative)
 
-### Run Migrations
+If you prefer scripts over Make:
 ```bash
-./console doctrine:migrations:migrate
-```
-
-### View Container Logs
-```bash
-docker-compose logs -f php
+./test                   # Run tests
+./phpstan analyse        # Run static analysis
+./deptrac analyze        # Validate architecture
+./console [command]      # Symfony console
+./composer [command]     # Composer commands
 ```
 
 ## Endpoints
 
-- Health Check: http://localhost:8000/health
-- API Docs: http://localhost:8000/api
+- Health Check: http://localhost:8001/api/health
+- API Docs: http://localhost:8001/api
+- Netflix Videos: http://localhost:8001/api/netflix_videos
 
 ## Troubleshooting
 
 ### Clear all caches
 ```bash
-./console cache:clear
-./console cache:clear --env=test
+make cache-clear
 ```
 
-### Rebuild containers
+### Rebuild environment
 ```bash
-docker-compose down -v
-docker-compose up -d --build
-./composer install
+make setup
 ```
 
-### Fix permissions
+### View logs
 ```bash
-./php chown -R www-data:www-data /var/www/html
+make logs
+```
+
+### Reset database
+```bash
+make db-reset
 ```
 

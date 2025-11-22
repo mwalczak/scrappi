@@ -62,11 +62,14 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@install-hooks"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@install-hooks"
         ],
+        "install-hooks": "bash .githooks/install-hooks.sh",
         "deptrac": "vendor/bin/deptrac analyze --config-file=deptrac.yaml",
         "phpstan": "vendor/bin/phpstan analyse --memory-limit=512M"
     },

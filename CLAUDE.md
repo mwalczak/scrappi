@@ -14,51 +14,75 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Environment
 
-All commands run inside Docker containers. Use helper scripts in the project root:
+All commands run inside Docker containers. Use Make commands for common tasks:
 
+```bash
+make help                    # Show all available commands
+make setup                   # Complete environment setup
+make up                      # Start containers
+make down                    # Stop containers
+make test                    # Run tests
+make phpstan                 # Run static analysis
+make deptrac                 # Validate architecture
+```
+
+## Common Commands
+
+### Development Workflow
+```bash
+make setup                   # First-time setup (clean install)
+make up                      # Start containers
+make down                    # Stop containers
+make restart                 # Restart containers
+make clean                   # Stop and remove volumes
+make logs                    # View container logs
+make shell                   # Open PHP container shell
+```
+
+### Database Management
+```bash
+make db-create               # Create database
+make db-migrate              # Run migrations
+make db-reset                # Drop and recreate database
+make db-test-setup           # Set up test database
+```
+
+### Testing & Quality
+```bash
+make test                    # Run all tests
+make phpstan                 # Run PHPStan at level 9 (maximum strictness)
+make deptrac                 # Validate architecture boundaries
+make qa                      # Run all quality checks
+```
+
+### Cache & Maintenance
+```bash
+make cache-clear             # Clear all caches
+make install                 # Install/update dependencies
+```
+
+### Helper Commands
+```bash
+make composer CMD="require pkg"     # Run Composer command
+make console CMD="debug:router"     # Run Symfony console command
+```
+
+### Alternative: Helper Scripts
+If you prefer scripts over Make:
 ```bash
 ./php [command]              # Run any command in PHP container
 ./composer [command]         # Run Composer commands
 ./console [command]          # Run Symfony console commands
 ./test [args]                # Run PHPUnit tests
-```
-
-## Common Commands
-
-### Running the application
-```bash
-docker-compose up -d --build  # Start all services
-docker-compose down           # Stop services
-docker-compose down -v        # Stop and remove volumes
-```
-
-### Dependencies
-```bash
-./composer install
-./composer require [package]
-./composer update
-```
-
-### Testing
-```bash
-./test                                              # Run all tests
-./test --filter HealthCheck                         # Run specific test
-./test tests/Controller/HealthCheckControllerTest.php  # Run specific file
-```
-
-### Symfony Console
-```bash
-./console cache:clear                 # Clear cache
-./console cache:clear --env=test     # Clear test cache
-./console debug:router               # Show routes
-./console doctrine:database:create   # Create database
-./console doctrine:migrations:migrate # Run migrations
+./phpstan analyse            # Run static analysis
+./deptrac analyze            # Validate architecture
 ```
 
 ### Accessing the application
-- API Platform Swagger UI: http://localhost:8000/api
-- OpenAPI spec: http://localhost:8000/api/docs.json
-- Health check: http://localhost:8000/api/health
+- API Platform Swagger UI: http://localhost:8001/api
+- OpenAPI spec: http://localhost:8001/api/docs.json
+- Health check: http://localhost:8001/api/health
+- Netflix Videos API: http://localhost:8001/api/netflix_videos
 
 ## Project Purpose
 
@@ -177,14 +201,42 @@ class MediaStateProvider implements ProviderInterface
         private GetMediaListQueryHandler $queryHandler
     ) {}
 
-    public function provide(...): array
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        return $this->queryHandler->handle(new GetMediaListQuery());
+        // Use assertions for type safety (PHPStan level 9)
+        if (isset($context['filters'])) {
+            assert(is_array($context['filters']));
+            // Process filters...
+        }
+
+        $dtos = $this->queryHandler->__invoke(new GetMediaListQuery());
+
+        // Use mapper to convert DTOs to API Resources
+        return array_map(
+            MediaMapper::toResource(...),
+            $dtos
+        );
+    }
+}
+
+// src/Infrastructure/ApiPlatform/Mapper/MediaMapper.php
+final class MediaMapper
+{
+    public static function toResource(MediaDTO $dto): Media
+    {
+        $resource = new Media();
+        $resource->id = $dto->id;
+        $resource->title = $dto->title;
+        return $resource;
     }
 }
 ```
 
-**Note**: The current HealthCheck example (`src/State/HealthCheckProvider.php:6-15`) is a simple demonstration. For production features following hexagonal architecture, State Providers should delegate to Application Query Handlers as shown in the example above.
+**Key patterns**:
+- **Mapper classes**: Use static mappers to convert DTOs to API Resources (avoids code duplication)
+- **Assertions**: Use `assert()` for runtime type checks (PHPStan understands these)
+- **First-class callables**: Use `Mapper::method(...)` syntax for cleaner array_map calls
+- **Type safety**: Add explicit type guards for mixed types at PHPStan level 9
 
 ### Dependency Injection Configuration
 
@@ -547,6 +599,27 @@ All tests run in the test environment, which uses `.env.test` configuration and 
 
 The test suite is configured to be strict: fails on warnings, risky tests, and unexpected output.
 
+**Test Base Classes**:
+- **ApiTestCase** (`tests/Functional/Api/ApiTestCase.php`): Base class for API tests with helper methods
+  - `getJsonResponse(KernelBrowser $client): array` - Parses and validates JSON responses
+  - Eliminates duplicate JSON parsing code across test files
+
+Example:
+```php
+// tests/Functional/Api/SomeApiTest.php
+class SomeApiTest extends ApiTestCase
+{
+    public function testEndpoint(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/endpoint');
+
+        $response = $this->getJsonResponse($client);
+        // Use $response array directly...
+    }
+}
+```
+
 ## Important Notes
 
 ### Architecture
@@ -568,3 +641,19 @@ The test suite is configured to be strict: fails on warnings, risky tests, and u
 - Tests should follow the same architecture (test Domain logic separately from Infrastructure)
 - Use test doubles/mocks for Infrastructure when testing Application layer
 - Integration tests should test the full stack through API Platform or Console commands
+- Extend `ApiTestCase` for API endpoint tests to reuse helper methods
+
+### Code Quality
+- **PHPStan Level 9**: Maximum type safety - all code must pass without errors
+- Use `assert()` statements for runtime type narrowing (PHPStan understands these)
+- Add explicit type guards before casting mixed types (`is_string()`, `is_numeric()`, etc.)
+- Use static mapper classes to eliminate code duplication in State Providers
+- Run `./deptrac analyze` to ensure architecture boundaries are maintained
+
+### Git Hooks (Automatic)
+- **Pre-commit hook** automatically runs PHPStan and Deptrac before each commit
+- Hooks are **automatically installed** via Composer (post-install/update scripts)
+- All developers get the same hooks - no manual setup needed
+- Located in `.githooks/` directory (version controlled)
+- To reinstall manually: `make hooks` or `composer install-hooks`
+- To bypass (not recommended): `git commit --no-verify`
