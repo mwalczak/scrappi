@@ -1,8 +1,6 @@
 # Symfony API Platform Application
 
-A simple PHP API application using Symfony 7.3 and API Platform 4.0 with Netflix video scraping capabilities.
-
-> 📖 **For detailed architecture, patterns, and development guidelines**, see [AGENTS.md](AGENTS.md)
+A simple PHP API application using Symfony 7.3 and API Platform 4.0 providing health check and a basic Resource.
 
 ## Requirements
 
