@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Tests\Controller;
+declare(strict_types=1);
+
+namespace App\Tests\Functional\Api;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class HealthCheckControllerTest extends WebTestCase
+class HealthCheckTest extends WebTestCase
 {
     public function testHealthCheckReturnsSuccessfulResponse(): void
     {

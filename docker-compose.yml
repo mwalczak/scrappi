@@ -3,22 +3,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api_php
     volumes:
       - ./:/var/www/html
     ports:
-      - "8000:8000"
+      - "8001:8000"
     networks:
       - api_network
     environment:
       - APP_ENV=dev
-      - DATABASE_URL=postgresql://app:app@db:5432/app?serverVersion=15&charset=utf8
     depends_on:
       - db
 
   db:
     image: postgres:15-alpine
-    container_name: api_db
     environment:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
@@ -26,7 +23,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5434:5432"
     networks:
       - api_network
 

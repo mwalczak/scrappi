@@ -6,8 +6,19 @@
 #   ./console cache:clear
 #   ./console debug:router
 #   ./console doctrine:database:create
+#   APP_ENV=test ./console cache:clear
 
 cd "$(dirname "$0")"
 
-docker-compose exec php php bin/console "$@"
+# Build environment variable arguments
+ENV_ARGS=""
+[ -n "$APP_ENV" ] && ENV_ARGS="$ENV_ARGS -e APP_ENV=$APP_ENV"
+[ -n "$DATABASE_URL" ] && ENV_ARGS="$ENV_ARGS -e DATABASE_URL=$DATABASE_URL"
+
+# Execute command with or without environment variables
+if [ -n "$ENV_ARGS" ]; then
+    docker-compose exec $ENV_ARGS php php bin/console "$@"
+else
+    docker-compose exec php php bin/console "$@"
+fi
 

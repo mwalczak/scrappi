@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Helper script to manage databases
+# Usage:
+#   ./db reset          - Reset both dev and test databases
+#   ./db reset:dev      - Reset only dev database
+#   ./db reset:test     - Reset only test database
+#   ./db create         - Create both databases
+#   ./db drop           - Drop both databases
+#   ./db migrate        - Run migrations on both databases
+
+cd "$(dirname "$0")"
+
+reset_dev() {
+    echo "🔄 Resetting development database..."
+    ./console doctrine:database:drop --force --if-exists || true
+    ./console doctrine:database:create
+    ./console doctrine:migrations:migrate --no-interaction
+    echo "✅ Development database reset complete"
+}
+
+reset_test() {
+    echo "🔄 Resetting test database..."
+    APP_ENV=test ./console doctrine:database:drop --force --if-exists || true
+    APP_ENV=test ./console doctrine:database:create
+    APP_ENV=test ./console doctrine:migrations:migrate --no-interaction
+    echo "✅ Test database reset complete"
+}
+
+create_databases() {
+    echo "🔧 Creating databases..."
+    ./console doctrine:database:create --if-not-exists
+    APP_ENV=test ./console doctrine:database:create --if-not-exists
+    echo "✅ Databases created"
+}
+
+drop_databases() {
+    echo "🗑️  Dropping databases..."
+    ./console doctrine:database:drop --force --if-exists || true
+    APP_ENV=test ./console doctrine:database:drop --force --if-exists || true
+    echo "✅ Databases dropped"
+}
+
+migrate_databases() {
+    echo "🔄 Running migrations on development database..."
+    ./console doctrine:migrations:migrate --no-interaction
+    echo "🔄 Running migrations on test database..."
+    APP_ENV=test ./console doctrine:migrations:migrate --no-interaction
+    echo "✅ Migrations complete"
+}
+
+case "${1:-reset}" in
+    reset)
+        reset_dev
+        reset_test
+        ;;
+    reset:dev)
+        reset_dev
+        ;;
+    reset:test)
+        reset_test
+        ;;
+    create)
+        create_databases
+        ;;
+    drop)
+        drop_databases
+        ;;
+    migrate)
+        migrate_databases
+        ;;
+    *)
+        echo "Usage: ./db [command]"
+        echo ""
+        echo "Commands:"
+        echo "  reset          Reset both dev and test databases (default)"
+        echo "  reset:dev      Reset only dev database"
+        echo "  reset:test     Reset only test database"
+        echo "  create         Create both databases"
+        echo "  drop           Drop both databases"
+        echo "  migrate        Run migrations on both databases"
+        echo ""
+        echo "Examples:"
+        echo "  ./db              # Reset both databases"
+        echo "  ./db reset:test   # Reset only test database"
+        exit 1
+        ;;
+esac

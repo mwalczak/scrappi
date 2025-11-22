@@ -1,10 +1,15 @@
 <?php
-namespace App\ApiResource;
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\ApiPlatform\Resource;
+
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\Response;
 #[ApiResource(
+    shortName: 'HealthCheck',
     operations: [
         new Get(
             uriTemplate: '/health',
@@ -35,10 +40,9 @@ use ApiPlatform\OpenApi\Model\Response;
                     )
                 ]
             ),
-            provider: 'App\State\HealthCheckProvider'
+            provider: 'App\Infrastructure\ApiPlatform\State\HealthCheckProvider'
         )
-    ],
-    shortName: 'HealthCheck'
+    ]
 )]
 class HealthCheck
 {

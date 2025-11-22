@@ -11,9 +11,32 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/ApiResource/'
+            - '../src/Infrastructure/ApiPlatform/Resource/'
+            - '../src/Domain/'
+
+    # Domain services
+    App\Domain\:
+        resource: '../src/Domain/'
+        exclude:
+            - '../src/Domain/*/Entity/'
+            - '../src/Domain/*/ValueObject/'
+            - '../src/Domain/*/Exception/'
+
+    # Application services
+    App\Application\:
+        resource: '../src/Application/'
+        exclude:
+            - '../src/Application/*/DTO/'
 
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
+
+    # Repository bindings
+    App\Domain\NetflixVideo\Repository\NetflixVideoRepositoryInterface:
+        class: App\Infrastructure\Persistence\Doctrine\Repository\DoctrineNetflixVideoRepository
+
+    # Health check bindings
+    App\Domain\HealthCheck\DatabaseHealthCheckInterface:
+        class: App\Infrastructure\Persistence\Doctrine\DoctrineDatabaseHealthCheck
 

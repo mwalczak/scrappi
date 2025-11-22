@@ -14,4 +14,7 @@ api_platform:
             vary: ['Content-Type', 'Authorization', 'Origin']
     swagger:
         versions: [3]
+    mapping:
+        paths:
+            - '%kernel.project_dir%/src/Infrastructure/ApiPlatform/Resource'
 
