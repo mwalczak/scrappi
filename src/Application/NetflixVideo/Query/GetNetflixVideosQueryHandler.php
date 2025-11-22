@@ -19,13 +19,9 @@ readonly class GetNetflixVideosQueryHandler
      */
     public function __invoke(GetNetflixVideosQuery $query): array
     {
-        $videos = $query->releaseYear !== null
+        return ($query->releaseYear !== null
             ? $this->repository->findByReleaseYear($query->releaseYear)
-            : $this->repository->findAll();
-
-        return array_map(
-            fn($video) => NetflixVideoDTO::fromEntity($video),
-            $videos
-        );
+            : $this->repository->findAll())
+            |> (fn($videos) => array_map(NetflixVideoDTO::fromEntity(...), $videos));
     }
 }

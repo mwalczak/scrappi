@@ -650,6 +650,60 @@ class SomeApiTest extends ApiTestCase
 - Use static mapper classes to eliminate code duplication in State Providers
 - Run `./deptrac analyze` to ensure architecture boundaries are maintained
 
+### PHP 8.5 Features in Use
+
+This project leverages modern PHP 8.5 features for cleaner, more maintainable code:
+
+#### Pipe Operator (|>)
+The pipe operator enables readable left-to-right data transformation chains:
+
+```php
+// Query Handlers
+public function __invoke(GetVideosQuery $query): array
+{
+    return $this->repository->findAll()
+        |> (fn($videos) => array_map(VideoDTO::fromEntity(...), $videos));
+}
+
+// State Providers with multiple transformations
+return new GetVideosQuery($filters)
+    |> $this->queryHandler->__invoke(...)
+    |> (fn($dtos) => array_map(Mapper::toResource(...), $dtos));
+```
+
+**Important**: Arrow functions on the right side must be parenthesized: `|> (fn($x) => ...)`
+
+#### Property Hooks
+Domain entities use property hooks for controlled access:
+
+```php
+class NetflixVideo
+{
+    public VideoId $id {
+        get {
+            return $this->id;
+        }
+    }
+    // Clean read-only access without explicit getters
+}
+```
+
+#### Array Functions
+Use `array_first()` and `array_last()` for cleaner array access:
+
+```php
+// Instead of: $first = reset($array) ?: null;
+$first = array_first($array) ?? null;
+
+// Instead of: $last = end($array) ?: null;
+$last = array_last($array) ?? null;
+```
+
+#### Future Features
+When implementing new features, consider:
+- **#[\NoDiscard]** - Mark command handlers whose return values shouldn't be ignored
+- **URI Extension** - Use `Uri\WhatWg\Url` for standards-compliant URL parsing in scrapers
+
 ### Git Hooks (Automatic)
 - **Pre-commit hook** automatically runs PHPStan and Deptrac before each commit
 - Hooks are **automatically installed** via Composer (post-install/update scripts)

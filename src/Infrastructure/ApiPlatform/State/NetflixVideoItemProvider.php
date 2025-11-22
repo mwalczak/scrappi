@@ -32,16 +32,9 @@ readonly class NetflixVideoItemProvider implements ProviderInterface
         $idValue = $uriVariables['id'];
         assert(is_string($idValue) || is_numeric($idValue), 'Invalid id parameter type');
 
-        $id = (string) $idValue;
-
-        $dto = $this->queryHandler->__invoke(
-            new GetNetflixVideoQuery($id)
-        );
-
-        if (!$dto) {
-            return null;
-        }
-
-        return NetflixVideoMapper::toResource($dto);
+        return (string) $idValue
+            |> (fn($id) => new GetNetflixVideoQuery($id))
+            |> $this->queryHandler->__invoke(...)
+            |> (fn($dto) => $dto ? NetflixVideoMapper::toResource($dto) : null);
     }
 }

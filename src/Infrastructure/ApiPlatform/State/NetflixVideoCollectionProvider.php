@@ -43,13 +43,8 @@ readonly class NetflixVideoCollectionProvider implements ProviderInterface
             }
         }
 
-        $dtos = $this->queryHandler->__invoke(
-            new GetNetflixVideosQuery($releaseYear)
-        );
-
-        return array_map(
-            NetflixVideoMapper::toResource(...),
-            $dtos
-        );
+        return new GetNetflixVideosQuery($releaseYear)
+            |> $this->queryHandler->__invoke(...)
+            |> (fn($dtos) => array_map(NetflixVideoMapper::toResource(...), $dtos));
     }
 }
