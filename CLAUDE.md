@@ -4,8 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Technology Stack
 
-- **PHP**: 8.4.14
-- **Symfony**: 7.3.5
+- **PHP**: 8.5
+- **Symfony**: 7.3
 - **API Platform**: 4.0 (upgraded from 3.4)
 - **Doctrine ORM**: 3.3+ with Doctrine Bundle 3.0+
 - **PHPUnit**: 12.0+
