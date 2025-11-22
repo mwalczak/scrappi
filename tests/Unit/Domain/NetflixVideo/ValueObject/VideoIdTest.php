@@ -14,7 +14,6 @@ class VideoIdTest extends TestCase
     {
         $videoId = VideoId::generate();
 
-        $this->assertInstanceOf(VideoId::class, $videoId);
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
             $videoId->value()
@@ -26,7 +25,6 @@ class VideoIdTest extends TestCase
         $uuid = '550e8400-e29b-41d4-a716-446655440000';
         $videoId = VideoId::fromString($uuid);
 
-        $this->assertInstanceOf(VideoId::class, $videoId);
         $this->assertEquals($uuid, $videoId->value());
     }
 

@@ -6,6 +6,7 @@ namespace App\Infrastructure\ApiPlatform\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Infrastructure\ApiPlatform\Mapper\NetflixVideoMapper;
 use App\Infrastructure\ApiPlatform\Resource\NetflixVideo;
 use App\Application\NetflixVideo\Query\GetNetflixVideoQuery;
 use App\Application\NetflixVideo\Query\GetNetflixVideoQueryHandler;
@@ -14,6 +15,8 @@ use App\Application\NetflixVideo\Query\GetNetflixVideoQueryHandler;
  * State provider for single Netflix video item operations.
  *
  * Delegates to Application layer and maps DTO to API Resource.
+ *
+ * @implements ProviderInterface<NetflixVideo>
  */
 readonly class NetflixVideoItemProvider implements ProviderInterface
 {
@@ -32,20 +35,6 @@ readonly class NetflixVideoItemProvider implements ProviderInterface
             return null;
         }
 
-        return $this->dtoToResource($dto);
-    }
-
-    private function dtoToResource($dto): NetflixVideo
-    {
-        $resource = new NetflixVideo();
-        $resource->id = $dto->id;
-        $resource->title = $dto->title;
-        $resource->description = $dto->description;
-        $resource->releaseYear = $dto->releaseYear;
-        $resource->imdbRating = $dto->imdbRating;
-        $resource->createdAt = $dto->createdAt;
-        $resource->updatedAt = $dto->updatedAt;
-
-        return $resource;
+        return NetflixVideoMapper::toResource($dto);
     }
 }

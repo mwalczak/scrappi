@@ -10,6 +10,9 @@ use App\Infrastructure\ApiPlatform\Resource\HealthCheck;
 use App\Application\HealthCheck\Query\GetHealthStatusQuery;
 use App\Application\HealthCheck\Query\GetHealthStatusQueryHandler;
 
+/**
+ * @implements ProviderInterface<HealthCheck>
+ */
 readonly class HealthCheckProvider implements ProviderInterface
 {
     public function __construct(

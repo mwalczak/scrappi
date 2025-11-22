@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Helper script to run PHPStan static analysis
+# Usage: ./phpstan [args]
+# Examples:
+#   ./phpstan analyse
+#   ./phpstan analyse --level 7
+#   ./phpstan analyse src/Domain
+#   ./phpstan clear-result-cache
+
+cd "$(dirname "$0")"
+
+docker-compose exec php vendor/bin/phpstan --memory-limit=512M "$@"

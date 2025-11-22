@@ -14,7 +14,6 @@ class ImdbRatingTest extends TestCase
     {
         $rating = ImdbRating::fromFloat(8.5);
 
-        $this->assertInstanceOf(ImdbRating::class, $rating);
         $this->assertEquals(8.5, $rating->value());
     }
 

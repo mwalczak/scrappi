@@ -1,0 +1,26 @@
+parameters:
+    # Start with level 6 - good balance between strictness and pragmatism
+    # Levels: 0 (least strict) to 9 (strictest)
+    # Level 6 checks: basic types, dead code, unknown methods, strict comparisons
+    # Can increase to 7 or 8 once initial issues are fixed
+    level: 6
+
+    # Paths to analyze
+    paths:
+        - src
+        - tests
+
+    # Exclude patterns
+    excludePaths:
+        - src/Kernel.php        # Symfony kernel - auto-generated logic
+        - tests/bootstrap.php   # Test bootstrap - simple setup file
+
+    # Symfony-specific configuration
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+
+    # Report unmatched ignored errors (helps keep config clean)
+    reportUnmatchedIgnoredErrors: false
+
+    # Treat PHP native function dynamic return types as certain
+    treatPhpDocTypesAsCertain: false

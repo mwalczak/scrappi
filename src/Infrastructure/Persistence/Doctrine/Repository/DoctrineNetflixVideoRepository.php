@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityRepository;
 
 class DoctrineNetflixVideoRepository implements NetflixVideoRepositoryInterface
 {
+    /** @var EntityRepository<NetflixVideo> */
     private EntityRepository $repository;
 
     public function __construct(

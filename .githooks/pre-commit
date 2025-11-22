@@ -1,11 +1,29 @@
 #!/bin/bash
 
-# Git pre-commit hook to run Deptrac architecture checks
-# This ensures architectural boundaries are respected before each commit
+# Git pre-commit hook to run code quality checks
+# This ensures code quality and architectural boundaries before each commit
 
-echo "🔍 Running Deptrac architecture checks..."
+echo "🔍 Running code quality checks..."
+echo ""
 
-# Run Deptrac using the helper script
+# Run PHPStan static analysis first (faster, catches type errors)
+echo "1/2 Running PHPStan static analysis..."
+if ! ./phpstan analyse --no-progress --error-format=table; then
+    echo ""
+    echo "❌ PHPStan found type errors!"
+    echo "   Please fix the errors before committing."
+    echo ""
+    echo "   To see detailed analysis, run: ./phpstan analyse"
+    echo "   To analyze specific path: ./phpstan analyse src/Domain"
+    echo "   To bypass this check (not recommended): git commit --no-verify"
+    echo ""
+    exit 1
+fi
+echo "✅ PHPStan checks passed!"
+echo ""
+
+# Run Deptrac architecture checks second (ensures layering)
+echo "2/2 Running Deptrac architecture checks..."
 if ! ./deptrac analyze --config-file=deptrac.yaml --no-progress; then
     echo ""
     echo "❌ Deptrac found architectural violations!"
@@ -16,6 +34,8 @@ if ! ./deptrac analyze --config-file=deptrac.yaml --no-progress; then
     echo ""
     exit 1
 fi
-
 echo "✅ Deptrac checks passed!"
+echo ""
+
+echo "✨ All checks passed! Proceeding with commit..."
 exit 0

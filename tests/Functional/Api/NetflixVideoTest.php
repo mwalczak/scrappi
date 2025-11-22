@@ -14,6 +14,7 @@ class NetflixVideoTest extends WebTestCase
 {
     private function getEntityManager(): EntityManagerInterface
     {
+        /** @var EntityManagerInterface */
         return static::getContainer()->get('doctrine')->getManager();
     }
 
