@@ -1,5 +1,5 @@
 {
-    "name": "app/api",
+    "name": "scrappi",
     "type": "project",
     "license": "proprietary",
     "description": "Symfony API Platform application",
