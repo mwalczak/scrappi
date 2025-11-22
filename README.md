@@ -139,11 +139,12 @@ docker-compose down -v
 
 ## Technology Stack
 
-- **PHP**: 8.2
-- **Symfony**: 7.0
-- **API Platform**: 3.3
-- **Doctrine ORM**: 2.20
-- **PHPUnit**: 10.5
+- **PHP**: 8.4+
+- **Symfony**: 7.3
+- **API Platform**: 4.0
+- **Doctrine ORM**: 3.3+
+- **Doctrine Bundle**: 3.0+
+- **PHPUnit**: 12.0+
 - **PostgreSQL**: 15
 - **Docker**: For containerization
 
@@ -189,12 +190,13 @@ All tests use Symfony's WebTestCase for full functional testing.
 Key environment variables in `.env`:
 
 ```env
-- **PHP**: 8.4.14 (Latest Stable)
-- **Symfony**: 7.3.5 (Latest Stable)
-- **API Platform**: 3.4.17
-- **Doctrine ORM**: 3.5.3
-- **Doctrine DBAL**: 4.3.4
-- **PHPUnit**: 11.5.42
+APP_ENV=dev                          # Application environment (dev, prod, test)
+APP_SECRET=changeme...               # Secret key for Symfony
+DATABASE_URL=postgresql://...        # PostgreSQL connection string
+DEFAULT_URI=http://localhost         # Default application URI
+CORS_ALLOW_ORIGIN=^https?://...     # CORS allowed origins regex
+```
+
 For testing, see `.env.test` which overrides settings for the test environment.
 
 ## Troubleshooting
