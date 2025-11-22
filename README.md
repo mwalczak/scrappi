@@ -2,6 +2,8 @@
 
 A simple PHP API application using Symfony 7.3 and API Platform 4.0 with Netflix video scraping capabilities.
 
+> 📖 **For detailed architecture, patterns, and development guidelines**, see [AGENTS.md](AGENTS.md)
+
 ## Requirements
 
 - Docker
@@ -123,53 +125,6 @@ make hooks
 ```bash
 git commit --no-verify
 ```
-
-### Adding New Endpoints
-
-1. Create a new controller in `src/Controller/`
-2. Add routes in `config/routes.yaml` or use route attributes
-3. Write tests in `tests/Controller/`
-
-### Adding API Resources
-
-1. Create entity in `src/Entity/` with API Platform attributes
-2. The resource will automatically be available at `/api/{resource}`
-3. API documentation is auto-generated
-
-## Health Check Endpoint
-
-The `/health` endpoint is a simple health check that returns:
-- Status: "healthy"
-- Current timestamp in ISO 8601 format
-
-This endpoint is useful for:
-- Container health checks
-- Load balancer health monitoring
-- Service availability verification
-- Kubernetes readiness/liveness probes
-
-## Testing
-
-The project includes comprehensive PHPUnit tests for the health check endpoint:
-
-- `testHealthCheckReturnsSuccessfulResponse()`: Verifies 200 status code and response structure
-- `testHealthCheckReturnsJsonContent()`: Verifies correct Content-Type header
-
-All tests use Symfony's WebTestCase for full functional testing.
-
-## Environment Variables
-
-Key environment variables in `.env`:
-
-```env
-APP_ENV=dev                          # Application environment (dev, prod, test)
-APP_SECRET=changeme...               # Secret key for Symfony
-DATABASE_URL=postgresql://...        # PostgreSQL connection string
-DEFAULT_URI=http://localhost         # Default application URI
-CORS_ALLOW_ORIGIN=^https?://...     # CORS allowed origins regex
-```
-
-For testing, see `.env.test` which overrides settings for the test environment.
 
 ## Troubleshooting
 

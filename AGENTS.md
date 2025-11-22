@@ -1,6 +1,8 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides comprehensive guidance for developers and AI coding assistants working with this codebase. It follows the [AGENTS.md convention](https://pnote.eu/notes/agents-md/) - an emerging standard for AI-assisted development.
+
+**Contents:** Architecture patterns, development workflows, code conventions, and best practices.
 
 ## Technology Stack
 
