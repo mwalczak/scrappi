@@ -1,9 +1,8 @@
 parameters:
-    # Start with level 6 - good balance between strictness and pragmatism
+    # Level 7 - stricter type checking
     # Levels: 0 (least strict) to 9 (strictest)
-    # Level 6 checks: basic types, dead code, unknown methods, strict comparisons
-    # Can increase to 7 or 8 once initial issues are fixed
-    level: 6
+    # Level 7 adds: report nullable types, check union types more strictly
+    level: 7
 
     # Paths to analyze
     paths:

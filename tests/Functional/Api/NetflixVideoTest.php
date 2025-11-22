@@ -8,9 +8,8 @@ use App\Domain\NetflixVideo\Entity\NetflixVideo;
 use App\Domain\NetflixVideo\ValueObject\ImdbRating;
 use App\Domain\NetflixVideo\ValueObject\VideoId;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class NetflixVideoTest extends WebTestCase
+class NetflixVideoTest extends ApiTestCase
 {
     private function getEntityManager(): EntityManagerInterface
     {
@@ -27,7 +26,7 @@ class NetflixVideoTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = $this->getJsonResponse($client);
         $this->assertIsArray($response);
         $this->assertArrayHasKey('member', $response);
         $this->assertCount(0, $response['member']);
@@ -67,7 +66,7 @@ class NetflixVideoTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = $this->getJsonResponse($client);
         $this->assertIsArray($response);
         $this->assertArrayHasKey('member', $response);
         $this->assertCount(2, $response['member']);
@@ -108,7 +107,7 @@ class NetflixVideoTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = $this->getJsonResponse($client);
         $this->assertEquals('Breaking Bad', $response['title']);
         $this->assertEquals('A high school chemistry teacher turned meth manufacturer', $response['description']);
         $this->assertEquals(2008, $response['releaseYear']);
@@ -153,7 +152,7 @@ class NetflixVideoTest extends WebTestCase
         // Assert
         $this->assertResponseIsSuccessful();
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = $this->getJsonResponse($client);
         $this->assertArrayHasKey('member', $response);
         $this->assertCount(1, $response['member']);
         $this->assertEquals(1, $response['totalItems']);

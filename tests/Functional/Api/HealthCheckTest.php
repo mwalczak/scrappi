@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Api;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
-class HealthCheckTest extends WebTestCase
+class HealthCheckTest extends ApiTestCase
 {
     public function testHealthCheckReturnsSuccessfulResponse(): void
     {
@@ -16,9 +14,7 @@ class HealthCheckTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
-
-        $this->assertIsArray($responseData);
+        $responseData = $this->getJsonResponse($client);
         $this->assertArrayHasKey('status', $responseData);
         $this->assertEquals('healthy', $responseData['status']);
         $this->assertArrayHasKey('timestamp', $responseData);
@@ -46,7 +42,7 @@ class HealthCheckTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $apiDoc = json_decode($client->getResponse()->getContent(), true);
+        $apiDoc = $this->getJsonResponse($client);
 
         // Check that /health endpoint is documented
         $this->assertArrayHasKey('paths', $apiDoc);
