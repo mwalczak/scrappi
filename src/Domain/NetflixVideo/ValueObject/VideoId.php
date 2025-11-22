@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\NetflixVideo\ValueObject;
 
+use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 
 readonly class VideoId
@@ -20,6 +21,11 @@ readonly class VideoId
 
     public static function fromString(string $value): self
     {
+        if (!Uuid::isValid($value)) {
+            throw new InvalidArgumentException(
+                sprintf('Invalid UUID format: %s', $value)
+            );
+        }
         return new self($value);
     }
 
@@ -31,5 +37,10 @@ readonly class VideoId
     public function equals(VideoId $other): bool
     {
         return $this->value === $other->value;
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
     }
 }

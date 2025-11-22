@@ -23,13 +23,13 @@ readonly class NetflixVideoDTO
     public static function fromEntity(NetflixVideo $video): self
     {
         return new self(
-            id: $video->getId()->value(),
-            title: $video->getTitle(),
-            description: $video->getDescription(),
-            releaseYear: $video->getReleaseYear(),
-            imdbRating: $video->getImdbRating()?->value(),
-            createdAt: $video->getCreatedAt(),
-            updatedAt: $video->getUpdatedAt()
+            id: $video->id->value(),
+            title: $video->title,
+            description: $video->description,
+            releaseYear: $video->releaseYear,
+            imdbRating: $video->imdbRating?->value(),
+            createdAt: $video->createdAt,
+            updatedAt: $video->updatedAt
         );
     }
 }

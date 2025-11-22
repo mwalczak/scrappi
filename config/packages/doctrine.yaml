@@ -1,15 +1,18 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        types:
+            video_id: App\Infrastructure\Persistence\Doctrine\Type\VideoIdType
+            imdb_rating: App\Infrastructure\Persistence\Doctrine\Type\ImdbRatingType
     orm:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: true
+        auto_mapping: false
         mappings:
-            Domain:
-                type: attribute
+            NetflixVideo:
+                type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Domain'
+                dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping'
                 prefix: 'App\Domain'
-                alias: Domain
+                alias: NetflixVideo
 

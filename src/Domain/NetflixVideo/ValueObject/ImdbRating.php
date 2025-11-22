@@ -30,4 +30,9 @@ readonly class ImdbRating
     {
         return $this->value >= 7.0;
     }
+
+    public function equals(ImdbRating $other): bool
+    {
+        return abs($this->value - $other->value) < PHP_FLOAT_EPSILON;
+    }
 }

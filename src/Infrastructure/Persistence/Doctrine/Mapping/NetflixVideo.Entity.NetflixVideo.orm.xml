@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\NetflixVideo\Entity\NetflixVideo" table="netflix_videos">
+        <!-- Primary Key - VideoId ValueObject as custom type -->
+        <id name="id" type="video_id" length="36">
+            <generator strategy="NONE"/>
+        </id>
+
+        <!-- Simple scalar fields -->
+        <field name="title" type="string" length="255" nullable="false"/>
+        <field name="description" type="text" nullable="false"/>
+        <field name="releaseYear" type="integer" column="release_year" nullable="false"/>
+
+        <!-- ImdbRating ValueObject as custom type (nullable) -->
+        <field name="imdbRating" type="imdb_rating" column="imdb_rating" nullable="true"/>
+
+        <!-- Timestamp fields -->
+        <field name="createdAt" type="datetime_immutable" column="created_at" nullable="false"/>
+        <field name="updatedAt" type="datetime_immutable" column="updated_at" nullable="false"/>
+
+        <!-- Indexes -->
+        <indexes>
+            <index name="idx_release_year" columns="release_year"/>
+        </indexes>
+    </entity>
+
+</doctrine-mapping>

@@ -28,7 +28,7 @@ class DoctrineNetflixVideoRepository implements NetflixVideoRepositoryInterface
 
     public function findById(VideoId $id): ?NetflixVideo
     {
-        return $this->repository->find($id->value()) ?: null;
+        return $this->repository->find($id) ?: null;
     }
 
     public function findAll(): array
