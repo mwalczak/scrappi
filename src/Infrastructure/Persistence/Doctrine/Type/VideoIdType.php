@@ -23,7 +23,11 @@ class VideoIdType extends Type
             return null;
         }
 
-        return VideoId::fromString((string) $value);
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Expected string value for VideoId');
+        }
+
+        return VideoId::fromString($value);
     }
 
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string

@@ -23,6 +23,10 @@ class ImdbRatingType extends Type
             return null;
         }
 
+        if (!is_numeric($value)) {
+            throw new \InvalidArgumentException('Expected numeric value for ImdbRating');
+        }
+
         return ImdbRating::fromFloat((float) $value);
     }
 

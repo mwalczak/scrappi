@@ -30,7 +30,18 @@ readonly class NetflixVideoCollectionProvider implements ProviderInterface
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        $releaseYear = $context['filters']['releaseYear'] ?? null;
+        $releaseYear = null;
+
+        if (isset($context['filters'])) {
+            assert(is_array($context['filters']));
+
+            if (isset($context['filters']['releaseYear'])) {
+                $releaseYearValue = $context['filters']['releaseYear'];
+                assert(is_numeric($releaseYearValue));
+
+                $releaseYear = (int) $releaseYearValue;
+            }
+        }
 
         $dtos = $this->queryHandler->__invoke(
             new GetNetflixVideosQuery($releaseYear)

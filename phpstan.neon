@@ -1,8 +1,8 @@
 parameters:
-    # Level 7 - stricter type checking
+    # Level 9 - maximum strictness (max level)
     # Levels: 0 (least strict) to 9 (strictest)
-    # Level 7 adds: report nullable types, check union types more strictly
-    level: 7
+    # Level 9 adds: enforce explicit mixed types, disallow implicit mixed
+    level: 9
 
     # Paths to analyze
     paths:

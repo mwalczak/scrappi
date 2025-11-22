@@ -27,8 +27,15 @@ readonly class NetflixVideoItemProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?NetflixVideo
     {
+        assert(isset($uriVariables['id']), 'Missing id parameter');
+
+        $idValue = $uriVariables['id'];
+        assert(is_string($idValue) || is_numeric($idValue), 'Invalid id parameter type');
+
+        $id = (string) $idValue;
+
         $dto = $this->queryHandler->__invoke(
-            new GetNetflixVideoQuery($uriVariables['id'])
+            new GetNetflixVideoQuery($id)
         );
 
         if (!$dto) {
