@@ -15,6 +15,8 @@ readonly class NetflixVideoDTO
         public string $description,
         public int $releaseYear,
         public ?float $imdbRating,
+        public ?string $imdbId,
+        public ?string $imdbUrl,
         public DateTimeImmutable $createdAt,
         public DateTimeImmutable $updatedAt
     ) {
@@ -28,6 +30,8 @@ readonly class NetflixVideoDTO
             description: $video->description,
             releaseYear: $video->releaseYear,
             imdbRating: $video->imdbRating?->value(),
+            imdbId: $video->imdbId?->value(),
+            imdbUrl: $video->imdbId?->toUrl(),
             createdAt: $video->createdAt,
             updatedAt: $video->updatedAt
         );

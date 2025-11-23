@@ -1,0 +1,25 @@
+framework:
+    messenger:
+        failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: async
+            failed: 'doctrine://default?queue_name=failed'
+            sync: 'sync://'
+
+        routing:
+            # Route your messages to the transports
+            # Using sync for now - change to 'async' for asynchronous processing
+            'App\Application\NetflixVideo\Command\ScrapeNetflixVideosCommand': sync
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                # Use in-memory transport for testing
+                async: 'in-memory://'
+                failed: 'in-memory://'

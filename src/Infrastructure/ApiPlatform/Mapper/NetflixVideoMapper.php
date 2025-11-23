@@ -20,6 +20,8 @@ final class NetflixVideoMapper
         $resource->description = $dto->description;
         $resource->releaseYear = $dto->releaseYear;
         $resource->imdbRating = $dto->imdbRating;
+        $resource->imdbId = $dto->imdbId;
+        $resource->imdbUrl = $dto->imdbUrl;
         $resource->createdAt = $dto->createdAt;
         $resource->updatedAt = $dto->updatedAt;
 

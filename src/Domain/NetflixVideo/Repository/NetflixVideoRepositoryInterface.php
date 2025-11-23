@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\NetflixVideo\Repository;
 
 use App\Domain\NetflixVideo\Entity\NetflixVideo;
+use App\Domain\NetflixVideo\ValueObject\ImdbId;
 use App\Domain\NetflixVideo\ValueObject\VideoId;
 
 interface NetflixVideoRepositoryInterface
@@ -12,6 +13,8 @@ interface NetflixVideoRepositoryInterface
     public function save(NetflixVideo $video): void;
 
     public function findById(VideoId $id): ?NetflixVideo;
+
+    public function findByImdbId(ImdbId $imdbId): ?NetflixVideo;
 
     /**
      * @return NetflixVideo[]

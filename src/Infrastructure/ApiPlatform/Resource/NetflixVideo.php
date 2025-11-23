@@ -42,6 +42,12 @@ class NetflixVideo
     #[ApiProperty(description: 'The IMDB rating (0.0-10.0)', example: 8.5)]
     public ?float $imdbRating = null;
 
+    #[ApiProperty(description: 'The IMDB ID (e.g., tt1234567)', example: 'tt0111161')]
+    public ?string $imdbId = null;
+
+    #[ApiProperty(description: 'The IMDB URL', example: 'https://www.imdb.com/title/tt0111161/')]
+    public ?string $imdbUrl = null;
+
     #[ApiProperty(description: 'The date and time when the video was created', readable: true, writable: false)]
     public DateTimeImmutable $createdAt;
 

@@ -4,6 +4,7 @@ doctrine:
         types:
             video_id: App\Infrastructure\Persistence\Doctrine\Type\VideoIdType
             imdb_rating: App\Infrastructure\Persistence\Doctrine\Type\ImdbRatingType
+            imdb_id: App\Infrastructure\Persistence\Doctrine\Type\ImdbIdType
     orm:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

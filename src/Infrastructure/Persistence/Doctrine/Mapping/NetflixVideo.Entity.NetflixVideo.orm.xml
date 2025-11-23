@@ -18,6 +18,9 @@
         <!-- ImdbRating ValueObject as custom type (nullable) -->
         <field name="imdbRating" type="imdb_rating" column="imdb_rating" nullable="true"/>
 
+        <!-- ImdbId ValueObject as custom type (nullable) -->
+        <field name="imdbId" type="imdb_id" column="imdb_id" length="15" nullable="true"/>
+
         <!-- Timestamp fields -->
         <field name="createdAt" type="datetime_immutable" column="created_at" nullable="false"/>
         <field name="updatedAt" type="datetime_immutable" column="updated_at" nullable="false"/>

@@ -57,6 +57,14 @@ class NetflixVideoTest extends ApiTestCase
         $this->assertEquals($video1->description, $firstVideo['description']);
         $this->assertEquals($video1->releaseYear, $firstVideo['releaseYear']);
         $this->assertEquals($video1->imdbRating?->value(), $firstVideo['imdbRating']);
+        $this->assertEquals($video1->imdbId?->value(), $firstVideo['imdbId']);
+
+        // Verify IMDB URL is generated from IMDB ID
+        if ($video1->imdbId !== null) {
+            $expectedUrl = sprintf('https://www.imdb.com/title/%s/', $video1->imdbId->value());
+            $this->assertEquals($expectedUrl, $firstVideo['imdbUrl']);
+        }
+
         $this->assertArrayHasKey('createdAt', $firstVideo);
         $this->assertArrayHasKey('updatedAt', $firstVideo);
     }
@@ -80,6 +88,14 @@ class NetflixVideoTest extends ApiTestCase
         $this->assertEquals($video->description, $response['description']);
         $this->assertEquals($video->releaseYear, $response['releaseYear']);
         $this->assertEquals($video->imdbRating?->value(), $response['imdbRating']);
+        $this->assertEquals($video->imdbId?->value(), $response['imdbId']);
+
+        // Verify IMDB URL is generated from IMDB ID
+        if ($video->imdbId !== null) {
+            $expectedUrl = sprintf('https://www.imdb.com/title/%s/', $video->imdbId->value());
+            $this->assertEquals($expectedUrl, $response['imdbUrl']);
+        }
+
         $this->assertArrayHasKey('id', $response);
         $this->assertArrayHasKey('createdAt', $response);
         $this->assertArrayHasKey('updatedAt', $response);

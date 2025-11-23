@@ -6,6 +6,7 @@ namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\NetflixVideo\Entity\NetflixVideo;
 use App\Domain\NetflixVideo\Repository\NetflixVideoRepositoryInterface;
+use App\Domain\NetflixVideo\ValueObject\ImdbId;
 use App\Domain\NetflixVideo\ValueObject\VideoId;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -30,6 +31,11 @@ class DoctrineNetflixVideoRepository implements NetflixVideoRepositoryInterface
     public function findById(VideoId $id): ?NetflixVideo
     {
         return $this->repository->find($id) ?: null;
+    }
+
+    public function findByImdbId(ImdbId $imdbId): ?NetflixVideo
+    {
+        return $this->repository->findOneBy(['imdbId' => $imdbId]) ?: null;
     }
 
     public function findAll(): array

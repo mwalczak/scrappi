@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Factory;
 
 use App\Domain\NetflixVideo\Entity\NetflixVideo;
+use App\Domain\NetflixVideo\ValueObject\ImdbId;
 use App\Domain\NetflixVideo\ValueObject\ImdbRating;
 use App\Domain\NetflixVideo\ValueObject\VideoId;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -32,6 +33,9 @@ final class NetflixVideoFactory extends PersistentObjectFactory
             'imdbRating' => ImdbRating::fromFloat(
                 self::faker()->randomFloat(1, 1.0, 10.0)
             ),
+            'imdbId' => ImdbId::fromString(
+                'tt' . str_pad((string) self::faker()->numberBetween(1000000, 9999999), 7, '0', STR_PAD_LEFT)
+            ),
         ];
     }
 
@@ -54,12 +58,16 @@ final class NetflixVideoFactory extends PersistentObjectFactory
         $imdbRating = $attributes['imdbRating'] ?? null;
         assert($imdbRating === null || $imdbRating instanceof ImdbRating);
 
+        $imdbId = $attributes['imdbId'] ?? null;
+        assert($imdbId === null || $imdbId instanceof ImdbId);
+
         return new NetflixVideo(
             $attributes['id'],
             $attributes['title'],
             $attributes['description'],
             $attributes['releaseYear'],
-            $imdbRating
+            $imdbRating,
+            $imdbId
         );
     }
 
@@ -105,5 +113,21 @@ final class NetflixVideoFactory extends PersistentObjectFactory
                 self::faker()->randomFloat(1, 8.0, 10.0)
             ),
         ]);
+    }
+
+    /**
+     * Create a Netflix video with specific IMDB ID
+     */
+    public function withImdbId(string $imdbId): static
+    {
+        return $this->with(['imdbId' => ImdbId::fromString($imdbId)]);
+    }
+
+    /**
+     * Create a Netflix video without IMDB ID
+     */
+    public function withoutImdbId(): static
+    {
+        return $this->with(['imdbId' => null]);
     }
 }
