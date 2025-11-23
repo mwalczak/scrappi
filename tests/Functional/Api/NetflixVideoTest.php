@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Api;
 
-use App\Domain\NetflixVideo\Entity\NetflixVideo;
-use App\Domain\NetflixVideo\ValueObject\ImdbRating;
 use App\Domain\NetflixVideo\ValueObject\VideoId;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tests\Factory\NetflixVideoFactory;
+use Zenstruck\Foundry\Test\Factories;
+use Zenstruck\Foundry\Test\ResetDatabase;
 
 class NetflixVideoTest extends ApiTestCase
 {
-    private function getEntityManager(): EntityManagerInterface
-    {
-        /** @var EntityManagerInterface */
-        return static::getContainer()->get('doctrine')->getManager();
-    }
+    use ResetDatabase;
+    use Factories;
 
     public function testGetCollectionReturnsEmptyArray(): void
     {
@@ -37,27 +34,9 @@ class NetflixVideoTest extends ApiTestCase
     {
         $client = static::createClient();
 
-        // Arrange: Create test videos
-        $em = $this->getEntityManager();
-        $video1 = new NetflixVideo(
-            VideoId::generate(),
-            'Stranger Things',
-            'A group of kids encounter supernatural forces',
-            2016,
-            ImdbRating::fromFloat(8.7)
-        );
-
-        $video2 = new NetflixVideo(
-            VideoId::generate(),
-            'The Crown',
-            'The reign of Queen Elizabeth II',
-            2016,
-            ImdbRating::fromFloat(8.6)
-        );
-
-        $em->persist($video1);
-        $em->persist($video2);
-        $em->flush();
+        // Arrange: Create test videos using factory defaults
+        $video1 = NetflixVideoFactory::createOne();
+        $video2 = NetflixVideoFactory::createOne();
 
         // Act
         $client->request('GET', '/api/netflix-videos');
@@ -72,12 +51,12 @@ class NetflixVideoTest extends ApiTestCase
         $this->assertCount(2, $response['member']);
         $this->assertEquals(2, $response['totalItems']);
 
-        // Check first video
+        // Verify first video structure and data
         $firstVideo = $response['member'][0];
-        $this->assertEquals('Stranger Things', $firstVideo['title']);
-        $this->assertEquals('A group of kids encounter supernatural forces', $firstVideo['description']);
-        $this->assertEquals(2016, $firstVideo['releaseYear']);
-        $this->assertEquals(8.7, $firstVideo['imdbRating']);
+        $this->assertEquals($video1->title, $firstVideo['title']);
+        $this->assertEquals($video1->description, $firstVideo['description']);
+        $this->assertEquals($video1->releaseYear, $firstVideo['releaseYear']);
+        $this->assertEquals($video1->imdbRating?->value(), $firstVideo['imdbRating']);
         $this->assertArrayHasKey('createdAt', $firstVideo);
         $this->assertArrayHasKey('updatedAt', $firstVideo);
     }
@@ -86,32 +65,21 @@ class NetflixVideoTest extends ApiTestCase
     {
         $client = static::createClient();
 
-        // Arrange
-        $em = $this->getEntityManager();
-        $videoId = VideoId::generate();
-        $video = new NetflixVideo(
-            $videoId,
-            'Breaking Bad',
-            'A high school chemistry teacher turned meth manufacturer',
-            2008,
-            ImdbRating::fromFloat(9.5)
-        );
-
-        $em->persist($video);
-        $em->flush();
+        // Arrange: Create video with factory defaults
+        $video = NetflixVideoFactory::createOne();
 
         // Act
-        $client->request('GET', '/api/netflix-videos/' . $videoId->value());
+        $client->request('GET', '/api/netflix-videos/' . $video->id->value());
 
         // Assert
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
 
         $response = $this->getJsonResponse($client);
-        $this->assertEquals('Breaking Bad', $response['title']);
-        $this->assertEquals('A high school chemistry teacher turned meth manufacturer', $response['description']);
-        $this->assertEquals(2008, $response['releaseYear']);
-        $this->assertEquals(9.5, $response['imdbRating']);
+        $this->assertEquals($video->title, $response['title']);
+        $this->assertEquals($video->description, $response['description']);
+        $this->assertEquals($video->releaseYear, $response['releaseYear']);
+        $this->assertEquals($video->imdbRating?->value(), $response['imdbRating']);
         $this->assertArrayHasKey('id', $response);
         $this->assertArrayHasKey('createdAt', $response);
         $this->assertArrayHasKey('updatedAt', $response);
@@ -133,18 +101,8 @@ class NetflixVideoTest extends ApiTestCase
     {
         $client = static::createClient();
 
-        // Arrange
-        $em = $this->getEntityManager();
-        $video = new NetflixVideo(
-            VideoId::generate(),
-            'Unrated Show',
-            'A show without an IMDB rating yet',
-            2024,
-            null
-        );
-
-        $em->persist($video);
-        $em->flush();
+        // Arrange: Create video without rating (essential field for this test)
+        $video = NetflixVideoFactory::new()->withoutRating()->create();
 
         // Act
         $client->request('GET', '/api/netflix-videos');
@@ -156,9 +114,16 @@ class NetflixVideoTest extends ApiTestCase
         $this->assertArrayHasKey('member', $response);
         $this->assertCount(1, $response['member']);
         $this->assertEquals(1, $response['totalItems']);
+
+        // Verify the returned data matches what we created
+        $returnedVideo = $response['member'][0];
+        $this->assertEquals($video->title, $returnedVideo['title']);
+        $this->assertEquals($video->description, $returnedVideo['description']);
+        $this->assertEquals($video->releaseYear, $returnedVideo['releaseYear']);
+
         // When rating is null, API Platform may omit the key entirely
         $this->assertTrue(
-            !isset($response['member'][0]['imdbRating']),
+            !isset($returnedVideo['imdbRating']),
             'imdbRating should be null or omitted'
         );
     }

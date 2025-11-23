@@ -11,6 +11,9 @@ This file provides comprehensive guidance for developers and AI coding assistant
 - **API Platform**: 4.0 (upgraded from 3.4)
 - **Doctrine ORM**: 3.3+ with Doctrine Bundle 3.0+
 - **PHPUnit**: 12.0+
+- **PHPStan**: 2.1+ (Level 9 - maximum strictness)
+- **Deptrac**: Architecture validation
+- **Zenstruck/Foundry**: Test factories with Faker integration
 - **PostgreSQL**: 15
 - **Docker**: All development happens in containers
 
@@ -621,6 +624,113 @@ class SomeApiTest extends ApiTestCase
     }
 }
 ```
+
+**Test Factories (Zenstruck/Foundry)**:
+
+Use Foundry factories to create test data efficiently. Factories eliminate repetitive object creation code.
+
+```php
+use App\Tests\Factory\NetflixVideoFactory;
+use Zenstruck\Foundry\Test\Factories;
+use Zenstruck\Foundry\Test\ResetDatabase;
+
+class NetflixVideoTest extends ApiTestCase
+{
+    use ResetDatabase;  // Auto-reset database between tests
+    use Factories;       // Enable factory support
+
+    public function testExample(): void
+    {
+        // Create with defaults (uses Faker)
+        NetflixVideoFactory::createOne();
+
+        // Create with specific attributes
+        NetflixVideoFactory::createOne([
+            'title' => 'Breaking Bad',
+            'releaseYear' => 2008,
+        ]);
+
+        // Use fluent builder pattern
+        NetflixVideoFactory::new()
+            ->withTitle('Stranger Things')
+            ->withRating(8.7)
+            ->create();
+
+        // Create multiple at once
+        NetflixVideoFactory::createMany(5);
+
+        // Use factory helper methods
+        NetflixVideoFactory::new()
+            ->withoutRating()
+            ->highRated()
+            ->create();
+    }
+}
+```
+
+**Creating New Factories**:
+
+```php
+// tests/Factory/MediaFactory.php
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+/**
+ * @extends PersistentObjectFactory<Media>
+ */
+final class MediaFactory extends PersistentObjectFactory
+{
+    public static function class(): string
+    {
+        return Media::class;
+    }
+
+    protected function defaults(): array
+    {
+        return [
+            'id' => MediaId::generate(),
+            'title' => self::faker()->sentence(),
+            'type' => self::faker()->randomElement(['movie', 'series']),
+        ];
+    }
+
+    protected static function instantiate(array $attributes): Media
+    {
+        // For entities with constructor parameters
+        return new Media(
+            $attributes['id'],
+            $attributes['title'],
+            $attributes['type']
+        );
+    }
+
+    // Add helper methods for common scenarios
+    public function movie(): static
+    {
+        return $this->with(['type' => 'movie']);
+    }
+}
+```
+
+**Important:** Use `PersistentObjectFactory` (not `PersistentProxyObjectFactory` which is deprecated).
+
+**Using Factories in Tests:**
+
+```php
+// Returns actual entity objects (no proxies!)
+$video = NetflixVideoFactory::createOne(['title' => 'My Show']);
+
+// Direct property access - clean and simple
+$this->assertEquals($video->title, $response['title']);
+$this->assertEquals($video->releaseYear, $response['releaseYear']);
+```
+
+**Benefits**:
+- Eliminates repetitive test setup code
+- Faker integration for realistic test data
+- Fluent API for readable tests
+- Database reset between tests
+- Helper methods for common scenarios
+- **No proxy objects** - direct entity access with full type safety
 
 ## Important Notes
 
