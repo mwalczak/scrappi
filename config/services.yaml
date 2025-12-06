@@ -36,3 +36,7 @@ services:
     App\Domain\HealthCheck\DatabaseHealthCheckInterface:
         class: App\Infrastructure\Persistence\Doctrine\DoctrineDatabaseHealthCheck
 
+    # Command Bus bindings
+    App\Application\Shared\CommandBus:
+        class: App\Infrastructure\Messenger\MessengerCommandBus
+
