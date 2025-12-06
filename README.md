@@ -1,6 +1,38 @@
 # Symfony API Platform Application
 
-A simple PHP API application using Symfony 7.3 and API Platform 4.0 providing health check and a basic Resource.
+A simple PHP API application using Symfony 7.4 and API Platform 4.0 providing health check and a basic Resource.
+
+## Architecture
+
+This project follows **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design** principles.
+
+![Architecture Diagram](docs/architecture.png)
+
+### Layer Dependencies
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Infrastructure                          │
+│  (API Platform, Doctrine, Messenger, External Services)     │
+├─────────────────────────────────────────────────────────────┤
+│                      Application                            │
+│  (Commands, Queries, Handlers, DTOs, CommandBus Interface)  │
+├─────────────────────────────────────────────────────────────┤
+│                        Domain                               │
+│  (Entities, Value Objects, Repository Interfaces)           │
+└─────────────────────────────────────────────────────────────┘
+         ↑ Dependencies flow inward (toward Domain)
+```
+
+### Key Principles
+
+- **Domain Layer**: Pure business logic, no framework dependencies
+- **Application Layer**: Use case orchestration, framework-agnostic
+- **Infrastructure Layer**: Technical implementations (Doctrine, Symfony, API Platform)
+
+Architecture rules are enforced by **Deptrac** on every commit.
+
+See [ADR-001](docs/adr/001-hexagonal-architecture-with-ddd.md) for detailed documentation.
 
 ## Requirements
 
@@ -88,7 +120,7 @@ If you prefer not to use Make, helper scripts are still available:
 ## Technology Stack
 
 - **PHP**: 8.5
-- **Symfony**: 7.4
+- **Symfony**: 7.4 (LTS)
 - **API Platform**: 4.0
 - **Doctrine ORM**: 3.3+
 - **Doctrine Bundle**: 3.0+
