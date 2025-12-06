@@ -15,14 +15,15 @@
         "doctrine/orm": "^3.3",
         "nelmio/cors-bundle": "^2.6",
         "ramsey/uuid": "^4.9",
-        "symfony/asset": "7.3.*",
-        "symfony/console": "7.3.*",
-        "symfony/dotenv": "7.3.*",
+        "symfony/asset": "7.4.*",
+        "symfony/console": "7.4.*",
+        "symfony/dotenv": "7.4.*",
         "symfony/flex": "^2",
-        "symfony/framework-bundle": "7.3.*",
-        "symfony/runtime": "7.3.*",
-        "symfony/twig-bundle": "7.3.*",
-        "symfony/yaml": "7.3.*"
+        "symfony/framework-bundle": "7.4.*",
+        "symfony/messenger": "7.4.*",
+        "symfony/runtime": "7.4.*",
+        "symfony/twig-bundle": "7.4.*",
+        "symfony/yaml": "7.4.*"
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.4",
@@ -33,9 +34,9 @@
         "phpstan/phpstan-phpunit": "*",
         "phpstan/phpstan-symfony": "*",
         "phpunit/phpunit": "^12.0",
-        "symfony/browser-kit": "7.3.*",
-        "symfony/css-selector": "7.3.*",
-        "symfony/phpunit-bridge": "^7.3",
+        "symfony/browser-kit": "7.4.*",
+        "symfony/css-selector": "7.4.*",
+        "symfony/phpunit-bridge": "^7.4",
         "zenstruck/foundry": "^2.8"
     },
     "config": {
@@ -80,7 +81,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.3.*"
+            "require": "7.4.*"
         }
     }
 }

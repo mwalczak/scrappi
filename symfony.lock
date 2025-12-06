@@ -23,7 +23,7 @@
         }
     },
     "deptrac/deptrac": {
-        "version": "4.2",
+        "version": "4.3",
         "recipe": {
             "repo": "github.com/symfony/recipes-contrib",
             "branch": "main",
@@ -133,6 +133,18 @@
             "config/services.yaml",
             "public/index.php",
             "src/Kernel.php"
+        ]
+    },
+    "symfony/messenger": {
+        "version": "8.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "6.0",
+            "ref": "d8936e2e2230637ef97e5eecc0eea074eecae58b"
+        },
+        "files": [
+            "config/packages/messenger.yaml"
         ]
     },
     "symfony/phpunit-bridge": {
