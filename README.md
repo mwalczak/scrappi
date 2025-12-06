@@ -88,7 +88,7 @@ If you prefer not to use Make, helper scripts are still available:
 ## Technology Stack
 
 - **PHP**: 8.5
-- **Symfony**: 7.3
+- **Symfony**: 7.4
 - **API Platform**: 4.0
 - **Doctrine ORM**: 3.3+
 - **Doctrine Bundle**: 3.0+
