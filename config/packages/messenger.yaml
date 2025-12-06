@@ -13,7 +13,7 @@ framework:
 
         routing:
             # Route your messages to the transports
-            # Example: 'App\Message\MyMessage': async
+            'App\Application\NetflixVideo\Command\CreateNetflixVideoCommand': sync
 
 when@test:
     framework:

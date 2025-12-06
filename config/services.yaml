@@ -40,3 +40,9 @@ services:
     App\Application\Shared\CommandBus:
         class: App\Infrastructure\Messenger\MessengerCommandBus
 
+    # Message Handlers
+    App\Application\NetflixVideo\Command\CreateNetflixVideoCommandHandler:
+        tags:
+            - name: messenger.message_handler
+              handles: App\Application\NetflixVideo\Command\CreateNetflixVideoCommand
+

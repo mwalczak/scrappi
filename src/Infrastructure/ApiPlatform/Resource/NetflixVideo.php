@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use DateTimeImmutable;
 
 #[ApiResource(
@@ -22,6 +23,11 @@ use DateTimeImmutable;
             uriTemplate: '/netflix-videos/{id}',
             description: 'Retrieves a Netflix video resource',
             provider: 'App\Infrastructure\ApiPlatform\State\NetflixVideoItemProvider'
+        ),
+        new Post(
+            uriTemplate: '/netflix-videos',
+            description: 'Creates a Netflix video resource',
+            processor: 'App\Infrastructure\ApiPlatform\State\NetflixVideoProcessor'
         )
     ]
 )]
