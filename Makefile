@@ -1,4 +1,4 @@
-.PHONY: help setup up down restart clean install test phpstan deptrac db-create db-migrate db-reset db-test shell composer console logs
+.PHONY: help setup up down restart clean install test phpstan deptrac db-create db-migrate db-reset db-test shell composer console logs chmod
 
 .DEFAULT_GOAL := help
 
@@ -22,6 +22,7 @@ help: ## Show this help message
 
 # Setup and Installation
 setup: ## Complete environment setup (clean install)
+	@$(MAKE) chmod
 	@echo "$(BLUE)Setting up development environment...$(NC)"
 	@$(MAKE) clean
 	@$(MAKE) up
@@ -56,11 +57,15 @@ setup: ## Complete environment setup (clean install)
 install: ## Install Composer dependencies and git hooks
 	@echo "$(BLUE)Installing dependencies...$(NC)"
 	@./composer install --no-interaction --prefer-dist
-	@chmod +x php composer console test phpstan deptrac db 2>/dev/null || true
 	@echo "$(GREEN)✓ Dependencies installed$(NC)"
 
 hooks: ## Install git hooks
 	@bash .githooks/install-hooks.sh
+
+chmod: ## Make shell scripts executable
+	@echo "$(BLUE)Making shell scripts executable...$(NC)"
+	@chmod +x php composer console test phpstan deptrac db 2>/dev/null || true
+	@echo "$(GREEN)✓ Shell scripts are now executable$(NC)"
 
 # Docker Management
 up: ## Start Docker containers
