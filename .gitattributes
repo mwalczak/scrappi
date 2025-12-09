@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# Explicitly ensure shell scripts use LF, even if they don't have an extension if listed
+*.sh text eol=lf
